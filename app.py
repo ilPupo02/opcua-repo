@@ -197,6 +197,7 @@ if __name__ == "__main__":
 
             anomaly_state = {flag: var.get_value() for flag, var in anomaly_flags.items()}
             data = generate_simulated_data(previous_data, anomaly_state)
+            previous_data.update(data)
 
             # Process anomalies and reset flags
             for flag, value in anomaly_state.items():
