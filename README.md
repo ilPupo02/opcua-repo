@@ -1,63 +1,66 @@
 # opcua-repo
 
-# OPC UA Simulator
+## OPC UA Simulator
 
-Questo progetto simula un server OPC UA per l'interfacciamento con macchinari di produzione. I dati simulati includono variabili come la pressione, la temperatura, la qualità della stampa e altre variabili di processo. Il server consente di testare e simulare il funzionamento di macchinari industriali, come presse, essiccatori, stampanti e forni.
+This project simulates an OPC UA server for interfacing with production machinery. The simulated data includes variables such as pressure, temperature, print quality, and other process variables. The server allows testing and simulating the operation of industrial machines such as presses, dryers, printers, and kilns.
 
-## Funzionalità
+## Features
 
-### Ricette
+### Recipes
 
-Il sistema simula l'applicazione di tre ricette differenti per il processo di produzione:
+The system simulates the application of three different recipes for the production process:
 
-- **Ricetta 1**:
-  - Pressione: 200 bar
-  - Temperatura forno: 1200°C
+- **Recipe 1**:
+  - Pressure: 200 bar
+  - Kiln temperature: 1200°C
   
-- **Ricetta 2**:
-  - Pressione: 350 bar
-  - Temperatura forno: 1000°C
+- **Recipe 2**:
+  - Pressure: 350 bar
+  - Kiln temperature: 1000°C
   
-- **Ricetta 3**:
-  - Pressione: 300 bar
-  - Temperatura forno: 1350°C
+- **Recipe 3**:
+  - Pressure: 300 bar
+  - Kiln temperature: 1350°C
 
-Nota: La ricetta viene selezionata tramite un sistema HMI, e i valori di pressione e temperatura vengono impostati di conseguenza.
+Note: The recipe can be selected via an HMI system, and the pressure and temperature values are set accordingly.
 
-### Equipment (Macchinari)
+### Equipment
 
-1. **Pressa**:
-   - Pressione: Variabile tra 300 bar
-   - Rulliera di trasporto
-   - Conteggio delle lastre
-   - Umidità
+1. **Press**:
+   - Pressure: Ranges from 300 bar [High value from 400 bar]
+   - Conveyor roll
+   - Slab count
+   - Humidity
 
-2. **Essicatore**:
-   - Umidità
-   - Temperatura tra 150 - 200°C
+2. **Dryer**:
+   - Humidity
+   - Temperature ranging from 150°C to 200°C
 
-3. **Stampante**:
-   - Qualità delle testine (9 testine con una valutazione da 1 a 5 della qualità)
-   - Sensore visivo per la qualità della lastra (Valutazione da 1 a 5; un valore di 1 indica una lastra con anomalie come graffi)
+3. **Printer**:
+   - Printhead quality (3 printheads with ratings from 1 to 5 for each printhead's quality)
+   - Visual sensor for slab quality (Rating from 1 to 5; a rating of 1 indicates a sheet with defects like scratches)
 
-4. **Forno**:
-   - Temperatura tra 900 - 1400°C
-   - Qualità del tono (Valutazione da 1 a 5)
+4. **Kiln**:
+   - Temperature ranging from 900°C to 1400°C
+   - Tone quality (Rating from 1 to 5)
 
-### Anomalie Simulate
+### Simulated Anomalies
 
-Il sistema supporta la simulazione di diverse anomalie, che influenzano i dati di produzione:
+The system supports the simulation of various anomalies that affect production data:
 
-1. **FlagPressa**: Se attivato, la pressione della pressa verrà impostata su valori alti.
-2. **FlagStampaTestina**: Se attivato, una delle 9 testine di stampa avrà una bassa qualità (valore 1).
-3. **FlagStampaSensore**: Se attivato, la qualità di una lastra sarà bassa (valore 1).
-4. **FlagForno**: Se attivato, la temperatura del forno verrà impostata su valori elevati.
+1. **FlagAnomalyPression**: If activated, the press pressure will be set to high values [400 - 600 bar].
+2. **FlagAnomalyResetPH**: If activated, the 3 printheads will be set to high quality (value 5).
+3. **FlagAnomalyPH-1**: If activated, the first printhead will be set to low quality (value 1).
+4. **FlagAnomalyTempKiln**: If activated, the kiln temperature will be set to high values [1400 - 1600 °C].
+5. **FlagAnomalyQualitySlab**: If activated, the quality of the slab will be set to low value (value 1).
 
-Le anomalie vengono simulate come variazioni nei valori normali del sistema, e le qualità sono modificate in modo non equo per riflettere eventi reali.
+Anomalies are simulated as variations in the normal system values, and the quality ratings are adjusted unfairly to reflect real-world events.
 
-## Come usare
+## Settable Environment Variables
 
-1. **Clona il repository**:
-   ```bash
-   git clone https://github.com/ilpupo02/opcua-repo.git
-   cd opcua-repo
+You can configure the following environment variables to customize the simulation behavior:
+
+- `OPC_IP`: The IP address of the OPC UA server (Default: `0.0.0.0`)
+- `OPC_PORT`: The port for the OPC UA server (Default: `4840`)
+- `OPC_URI`: The URI for the OPC UA namespace (Default: `http://server-opcua/simulation/`)
+- `OPC_PATH`: The OPC UA path for the simulated data (Default: `simulation/opc-ua/`)
