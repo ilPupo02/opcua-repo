@@ -74,17 +74,17 @@ def generate_simulated_data(previous_data, anomaly_flags):
             data[key] = previous_data[key]  # No variation
 
     # Variation quality testina 2
-    var = random.randint(0, 10)
+    var = random.randint(0, 100)
     ph2 = data["quality_printhead_2"]
 
-    if ph2 > 1 and var >= 9:
+    if ph2 > 1 and var >= 90:
         ph2 -= 1
 
     # Variation quality testina 3
-    var = random.randint(0, 10)
+    var = random.randint(0, 100)
     ph3 = data["quality_printhead_3"]
 
-    if ph3 > 1 and var > 9:
+    if ph3 > 1 and var >= 90:
         ph3 -= 1
 
     data["quality_printhead_2"] = ph2
