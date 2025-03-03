@@ -23,31 +23,53 @@ VARIATION_RANGE = {
     "temp-kiln": 4
 }
 
+# Configurazione del logger
+logger = logging.getLogger("opcua_simulator")
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
 # Funzione per generare dati simulati con variazioni naturali
 def generate_simulated_data(previous_data, anomaly_flags):
-    global VARIATION_RANGE
+    global VARIATION_RANGE, logger
 
     # Gestione anomalie
     if anomaly_flags["FlagAnomalyPression"] and previous_data["pression"] < 400:
         previous_data["pression"] = random.randint(400, 600)
+        logger.info("Generating pression anomaly")
+    elif not anomaly_flags["FlagAnomalyPression"] and previous_data["pression"] > 400:
+        previous_data["pression"] = 300
+        logger.info("Deleting pression anomaly")
 
     if anomaly_flags["FlagAnomalyResetPH"]:
         previous_data["quality_printhead_1"] = 5
         previous_data["quality_printhead_2"] = 5
         previous_data["quality_printhead_3"] = 5
+        logger.info("Managing printhead to restart")
 
-    if anomaly_flags["FlagAnomalyPH-1"]:
+    if anomaly_flags["FlagAnomalyPH-1"] and previous_data["quality_printhead_1"] > 1:
         previous_data["quality_printhead_1"] = 1
+        logger.info("Generating printhead 1 anomaly")
+    elif not anomaly_flags["FlagAnomalyPH-1"] and previous_data["quality_printhead_1"] == 1:
+        previous_data["quality_printhead_1"] = 5
+        logger.info("Deleting printhead 1 anomaly")
 
     if anomaly_flags["FlagAnomalyTempKiln"] and previous_data["temp-kiln"] < 1400:
         previous_data["temp-kiln"] = random.randint(1400, 1600)
+        logger.info("Generating kiln's temperature anomaly")
+    elif not anomaly_flags["FlagAnomalyTempKiln"] and previous_data["temp-kiln"] > 1400:
+        previous_data["temp-kiln"] = 1200
+        logger.info("Deleting kiln's temperature anomaly")
+
 
     # Normale variazione dati
     data = {}
     for key in previous_data:
         if key in VARIATION_RANGE:
             variation = random.uniform(-VARIATION_RANGE[key], VARIATION_RANGE[key])
-            data[key] = max(1, round(previous_data[key] + variation, 2))
+            data[key] = max(0, round(previous_data[key] + variation, 2))
         else:
             data[key] = previous_data[key]  # No variation
 
@@ -85,8 +107,9 @@ def generate_simulated_data(previous_data, anomaly_flags):
     else:
         data["quality_slab"] = 1
 
-    if anomaly_flags["FlagAnomalyQualitySlab"]:
+    if anomaly_flags["FlagAnomalyQualitySlab"] and data["quality_slab"] > 1:
         data["quality_slab"] = 1
+        logger.info("Generating slab's quality anomaly")
 
     if data["pression"] < 500 and data["pression"] > 400 and data["quality_slab"] > 1:
         data["quality_slab"] -= 1
@@ -101,15 +124,6 @@ def generate_simulated_data(previous_data, anomaly_flags):
         data["quality_tone"] -= 2
 
     return data
-
-
-# Configurazione del logger
-logger = logging.getLogger("opcua_simulator")
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
 
 # Lettura variabili di ambiente per IP, porta e URI
 opc_ip = os.getenv('OPC_IP', '0.0.0.0')  # Default: 0.0.0.0
@@ -148,7 +162,7 @@ if __name__ == "__main__":
 
     # Equipment e variabili
     equipments = {
-        "Press": {"pression": 300, "speed": 1, "count": 10, "hum-press": 70},
+        "Press": {"pression": 300, "speed": 2, "count": 10, "hum-press": 70},
         "Dryer": {"hum-dry": 30, "temp-dry": 175},
         "Printer": {"quality_printhead_1": 5, "quality_printhead_2": 5, "quality_printhead_3": 5, "quality_slab": 5},
         "Kiln": {"temp-kiln": 1200, "quality_tone": 5},
@@ -186,9 +200,7 @@ if __name__ == "__main__":
 
             # Process anomalies and reset flags
             for flag, value in anomaly_state.items():
-                if value and flag != "FlagAnomalyQualitySlab":  # If flag is True
-                    logger.warning(f"Handling anomaly: {flag}")
-                    # Reset the flag to False after handling the anomaly
+                if value and flag == "FlagAnomalyResetPH":  # If flag is True
                     anomaly_flags[flag].set_value(False)
 
             for eq, tags in opc_tags.items():
