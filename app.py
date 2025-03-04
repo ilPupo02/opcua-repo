@@ -77,14 +77,13 @@ def generate_simulated_data(previous_data, anomaly_flags):
     var = random.randint(0, 100)
     ph2 = data["quality_printhead_2"]
 
-    if ph2 > 1 and var >= 90:
+    if ph2 > 1 and var >= 99:
         ph2 -= 1
 
     # Variation quality testina 3
-    var = random.randint(0, 100)
     ph3 = data["quality_printhead_3"]
 
-    if ph3 > 1 and var >= 90:
+    if ph3 > 1 and var <= 1:
         ph3 -= 1
 
     data["quality_printhead_2"] = ph2
@@ -162,8 +161,8 @@ if __name__ == "__main__":
 
     # Equipment e variabili
     equipments = {
-        "Press": {"pression": 300, "speed": 2, "count": 10, "hum-press": 70},
-        "Dryer": {"hum-dry": 30, "temp-dry": 175},
+        "Press": {"pression": 300, "speed": 2, "count": 10, "hum-press": 40},
+        "Dryer": {"hum-dry": 10, "temp-dry": 175},
         "Printer": {"quality_printhead_1": 5, "quality_printhead_2": 5, "quality_printhead_3": 5, "quality_slab": 5},
         "Kiln": {"temp-kiln": 1200, "quality_tone": 5},
     }
@@ -179,8 +178,8 @@ if __name__ == "__main__":
 
     server.start()
     previous_data = {
-        "pression": 300, "speed": 1, "count": 40, "hum-press": 70,
-        "hum-dry": 30, "temp-dry": 175,
+        "pression": 300, "speed": 1, "count": 40, "hum-press": 40,
+        "hum-dry": 10, "temp-dry": 175,
         "quality_printhead_1": 5, "quality_printhead_2": 5, "quality_printhead_3": 5, "quality_slab": 5,
         "temp-kiln": 1200, "quality_tone": 5
     }
